@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
+from fastapi.responses import Response
 from typing import List
 from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
@@ -19,7 +20,7 @@ async def create_notification(
     service: FromDishka[NotificationService]
 ):
     db_notification = await service.create_notification(notification)
-    return db_notification
+    return Response(status_code=status.HTTP_201_CREATED, content=db_notification.model_dump_json(indent=4))
 
 @router.get("/notifications/")
 @cache(ttl=60)
@@ -31,7 +32,6 @@ async def get_notifications(
     status_: str = None,
 ):
     res = await service.get_notifications(skip=skip, limit=limit, status=status_)
-    print("Res:", res)
     return res
 
 @router.get("/notifications/{notification_id}", response_model=NotificationResponse)

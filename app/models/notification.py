@@ -12,7 +12,7 @@ class Notification(Base):
     user_id = Column(UUID, nullable=False)
     title = Column(String, nullable=False)
     text = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
     read_at = Column(DateTime, nullable=True)
     # Результаты AI-анализа
     category = Column(String, nullable=True)

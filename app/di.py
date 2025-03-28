@@ -9,7 +9,7 @@ from app.repositories.notification_repository import NotificationRepository
 from app.services.notification_service import NotificationService, NotificationGateway
 
 
-def configs_provider() -> Provider:
+def config_provider() -> Provider:
     provider = Provider()
 
     cfg_path = os.getenv('AEZAKMI_TEST_CONFIG_PATH')
@@ -38,13 +38,9 @@ class DatabaseProvider(Provider):
             yield session
 
 
-class ServiceProvider(Provider):
+class NotificationProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def get_notification_gateway(self, session: AsyncSession) -> NotificationGateway:
-        return NotificationRepository(session)
-
-    @provide(scope=Scope.REQUEST)
-    def get_notification_repository(self, session: AsyncSession) -> NotificationRepository:
         return NotificationRepository(session)
 
     @provide(scope=Scope.REQUEST)
@@ -54,8 +50,8 @@ class ServiceProvider(Provider):
 
 def setup_di():
     return make_async_container(
-        configs_provider(),
+        config_provider(),
         DatabaseProvider(),
-        ServiceProvider(),
+        NotificationProvider(),
         RedisProvider()
     )
