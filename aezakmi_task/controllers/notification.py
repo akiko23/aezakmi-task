@@ -27,7 +27,7 @@ async def create_notification(
 
 
 @router.get("/notifications/")
-@cache(ttl=60)
+@cache(ttl=10)
 async def get_notifications(
         service: FromDishka[NotificationService],
         redis_client: FromDishka[Redis],  # noqa
@@ -40,7 +40,7 @@ async def get_notifications(
 
 
 @router.get("/notifications/{notification_id}", response_model=NotificationResponse)
-@cache(ttl=60)
+@cache(ttl=10)
 async def get_notification(
         notification_id: str,
         redis_client: FromDishka[Redis],  # noqa

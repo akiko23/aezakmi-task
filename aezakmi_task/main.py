@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from dishka import AsyncContainer
 from aezakmi_task.controllers.notification import router as notifications_router
 from dishka.integrations.fastapi import setup_dishka
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from aezakmi_task.di import setup_di
 
@@ -31,3 +32,6 @@ def create_app(ioc_container: AsyncContainer):
 
 container = setup_di()
 app = create_app(container)
+
+# initialise metrics
+Instrumentator().instrument(app).expose(app)
