@@ -3,10 +3,12 @@ from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker, AsyncEngine
 from dishka import make_async_container, Scope, provide, Provider
-from redis.asyncio import Redis, ConnectionPool as RedisConnectionPool
+from redis.asyncio import Redis
 from aezakmi_task.config import load_config, Config
 from aezakmi_task.repositories.notification_repository import NotificationRepository
-from aezakmi_task.services.notification_service import NotificationService, NotificationGateway, NotificationAnalyzer
+from aezakmi_task.services.notification_service import (
+    NotificationService, NotificationGateway, NotificationAnalyzer
+)
 from aezakmi_task.tasks.ai_tasks import AINotificationAnalyzer
 
 
@@ -34,7 +36,10 @@ class DatabaseProvider(Provider):
         return async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     @provide(scope=Scope.REQUEST)
-    async def get_session(self, sessionmaker: async_sessionmaker) -> AsyncGenerator[AsyncSession, None, None]:
+    async def get_session(
+            self,
+            sessionmaker: async_sessionmaker
+    ) -> AsyncGenerator[AsyncSession, None, None]:
         async with sessionmaker() as session:
             yield session
 

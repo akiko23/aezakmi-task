@@ -47,7 +47,9 @@ def _prepare_test_environment():
 
 
 # make sure that data will be lost after the end of the test
-async def get_one_time_session(sessionmaker: async_sessionmaker) -> AsyncGenerator[AsyncSession, None]:
+async def get_one_time_session(
+        sessionmaker: async_sessionmaker
+) -> AsyncGenerator[AsyncSession, None]:
     async with sessionmaker() as session:
         yield session
         await session.execute(text('truncate notifications;'))

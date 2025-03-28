@@ -1,13 +1,12 @@
-from fastapi import APIRouter, HTTPException, status
-from fastapi.responses import Response
-from typing import List
 from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
+from fastapi import APIRouter, HTTPException, status
+from fastapi.responses import Response
 from redis.asyncio import Redis
+
 from aezakmi_task.schemas.notification import (
     NotificationCreate,
-    NotificationResponse,
-    NotificationUpdate
+    NotificationResponse
 )
 from aezakmi_task.services.notification_service import NotificationService
 from aezakmi_task.utils.cache import cache
@@ -21,7 +20,10 @@ async def create_notification(
         service: FromDishka[NotificationService]
 ):
     db_notification = await service.create_notification(notification)
-    return Response(status_code=status.HTTP_201_CREATED, content=db_notification.model_dump_json(indent=4))
+    return Response(
+        status_code=status.HTTP_201_CREATED,
+        content=db_notification.model_dump_json(indent=4)
+    )
 
 
 @router.get("/notifications/")

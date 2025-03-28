@@ -26,7 +26,10 @@ class DatabaseProvider(Provider):
         return async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     @provide(scope=Scope.REQUEST)
-    async def get_session(self, sessionmaker: async_sessionmaker) -> AsyncGenerator[AsyncSession, None, None]:
+    async def get_session(
+            self,
+            sessionmaker: async_sessionmaker
+    ) -> AsyncGenerator[AsyncSession, None, None]:
         async with sessionmaker() as session:
             yield session
 
@@ -58,7 +61,7 @@ def process_notification_analysis(notification_id: str):
                     confidence=result["confidence"],
                     status="completed"
                 )
-            except Exception as e:
+            except Exception:
                 await repo.update_status(notification_id, "failed")
                 raise  # Повторно выбрасываем исключение для логирования Celery
 

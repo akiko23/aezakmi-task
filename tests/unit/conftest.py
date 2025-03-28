@@ -3,7 +3,11 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from aezakmi_task.services.notification_service import NotificationService, NotificationGateway, NotificationAnalyzer
+from aezakmi_task.services.notification_service import (
+    NotificationService,
+    NotificationGateway,
+    NotificationAnalyzer
+)
 
 
 @pytest.fixture(scope="function")
