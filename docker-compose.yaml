@@ -1,0 +1,20 @@
+services:
+  db:
+      image: postgres:16.0-alpine3.18
+      container_name: "aezakmi_task-db"
+      env_file:
+        - configs/db.env
+      ports:
+        - "127.0.0.1:5432:5432"
+      restart: always
+
+  redis:
+    image: redis:7.2.4-alpine
+    container_name: "learn_anything-redis"
+    ports:
+      - "127.0.0.1:6379:6379"
+    restart: "unless-stopped"
+    volumes:
+      - "./configs/:/usr/local/etc/redis"
+      - "/opt/fimoz/redis/data:/data"
+    command: "redis-server /usr/local/etc/redis/redis.conf"
