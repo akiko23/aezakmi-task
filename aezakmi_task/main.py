@@ -3,10 +3,10 @@ from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from dishka import AsyncContainer
-from app.controllers.notification import router as notifications_router
+from aezakmi_task.controllers.notification import router as notifications_router
 from dishka.integrations.fastapi import setup_dishka
 
-from app.di import setup_di
+from aezakmi_task.di import setup_di
 
 @asynccontextmanager
 async def lifespan(app_: FastAPI) -> AsyncGenerator[None, None]:

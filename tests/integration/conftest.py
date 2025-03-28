@@ -16,10 +16,10 @@ from sqlalchemy.ext.asyncio import (
 )
 from httpx import AsyncClient, ASGITransport
 
-from app.config import Config
-from app.main import create_app
-from app.models import Base
-from app.di import DatabaseProvider, NotificationProvider, RedisProvider, config_provider
+from aezakmi_task.config import Config
+from aezakmi_task.main import create_app
+from aezakmi_task.models import Base
+from aezakmi_task.di import DatabaseProvider, NotificationProvider, RedisProvider, config_provider
 
 import tracemalloc
 

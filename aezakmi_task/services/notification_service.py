@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import List, Optional, Protocol
 
-from app.models import Notification
-from app.schemas.notification import (
+from aezakmi_task.models import Notification
+from aezakmi_task.schemas.notification import (
     NotificationCreate,
     NotificationResponse,
     NotificationUpdate,

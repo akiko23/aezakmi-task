@@ -4,16 +4,16 @@ from collections.abc import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker, AsyncEngine
 from dishka import make_async_container, Scope, provide, Provider
 from redis.asyncio import Redis, ConnectionPool as RedisConnectionPool
-from app.config import load_config, Config
-from app.repositories.notification_repository import NotificationRepository
-from app.services.notification_service import NotificationService, NotificationGateway, NotificationAnalyzer
-from app.tasks.ai_tasks import AINotificationAnalyzer
+from aezakmi_task.config import load_config, Config
+from aezakmi_task.repositories.notification_repository import NotificationRepository
+from aezakmi_task.services.notification_service import NotificationService, NotificationGateway, NotificationAnalyzer
+from aezakmi_task.tasks.ai_tasks import AINotificationAnalyzer
 
 
 def config_provider() -> Provider:
     provider = Provider()
 
-    cfg_path = os.getenv('AEZAKMI_TEST_CONFIG_PATH')
+    cfg_path = os.getenv('AEZAKMI_TEST_CONFIG_PATH', './configs/app.toml')
     provider.provide(lambda: load_config(cfg_path), scope=Scope.APP, provides=Config)
     return provider
 

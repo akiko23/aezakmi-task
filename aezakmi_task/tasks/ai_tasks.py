@@ -7,12 +7,12 @@ from celery import Celery
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker, AsyncEngine
 from dishka import make_async_container, Scope, provide, Provider
 
-from app.config import load_config
-from app.repositories.notification_repository import NotificationRepository
-from app.services.ai_service import analyze_text
+from aezakmi_task.config import load_config
+from aezakmi_task.repositories.notification_repository import NotificationRepository
+from aezakmi_task.services.ai_service import analyze_text
 
 
-cfg = load_config(os.getenv('AEZAKMI_TEST_CONFIG_PATH'))
+cfg = load_config(os.getenv('AEZAKMI_TEST_CONFIG_PATH', './configs/app.toml'))
 celery_app = Celery('tasks', broker=cfg.redis.uri)
 
 

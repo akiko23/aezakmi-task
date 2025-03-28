@@ -7,10 +7,10 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-from app.models import *  # noqa
-from app.config import load_config
+from aezakmi_task.models import *  # noqa
+from aezakmi_task.config import load_config
 
-app_cfg = load_config(config_path=os.getenv("AEZAKMI_TEST_CONFIG_PATH"))
+app_cfg = load_config(config_path=os.getenv("AEZAKMI_TEST_CONFIG_PATH", './configs/app.toml'))
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

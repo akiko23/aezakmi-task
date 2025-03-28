@@ -4,9 +4,9 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from app.models import Notification
-from app.schemas.notification import NotificationCreate, NotificationUpdate
-from app.services.notification_service import NotificationService
+from aezakmi_task.models import Notification
+from aezakmi_task.schemas.notification import NotificationCreate, NotificationUpdate
+from aezakmi_task.services.notification_service import NotificationService
 
 
 @pytest.mark.asyncio

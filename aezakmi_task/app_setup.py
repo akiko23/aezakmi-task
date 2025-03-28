@@ -5,9 +5,9 @@ from fastapi import APIRouter, FastAPI
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import AppConfig, Config, HttpServerConfig
-from app.depends_stub import Stub
-from app.di import setup_di
+from aezakmi_task.config import AppConfig, Config, HttpServerConfig
+from aezakmi_task.depends_stub import Stub
+from aezakmi_task.di import setup_di
 
 
 def initialise_dependencies(app: FastAPI, config: Config) -> None:

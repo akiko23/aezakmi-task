@@ -5,8 +5,8 @@ from httpx import AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Notification
-from app.schemas.notification import NotificationCreate
+from aezakmi_task.models import Notification
+from aezakmi_task.schemas.notification import NotificationCreate
 
 
 @pytest.mark.asyncio

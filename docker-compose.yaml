@@ -6,15 +6,52 @@ services:
         - configs/db.env
       ports:
         - "127.0.0.1:5432:5432"
+      volumes:
+        - "/opt/aezakmi_task/pgdata:/var/lib/postgresql/data"
+      healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U user -d mydb" ]
+        interval: 5s
+        timeout: 5s
+        retries: 5
       restart: always
+
 
   redis:
     image: redis:7.2.4-alpine
-    container_name: "learn_anything-redis"
+    container_name: "aezakmi_task-redis"
     ports:
       - "127.0.0.1:6379:6379"
     restart: "unless-stopped"
     volumes:
       - "./configs/:/usr/local/etc/redis"
-      - "/opt/fimoz/redis/data:/data"
+      - "/opt/aezakmi_task/redis/data:/data"
     command: "redis-server /usr/local/etc/redis/redis.conf"
+
+  notification_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "aezakmi_task-notification_service"
+    environment:
+      AEZAKMI_TEST_CONFIG_PATH: "./configs/app.docker.toml"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  ai_analyzer_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "aezakmi_task-ai_analyzer_service"
+    environment:
+      AEZAKMI_TEST_CONFIG_PATH: "./configs/app.docker.toml"
+    command: "uv run celery -A aezakmi_task.tasks.ai_tasks worker --loglevel=info"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
