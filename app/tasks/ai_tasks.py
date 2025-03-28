@@ -63,3 +63,9 @@ def process_notification_analysis(notification_id: str):
                 raise  # Повторно выбрасываем исключение для логирования Celery
 
     return run_async(inner())
+
+
+# Celery forces doing outer encapsulation
+class AINotificationAnalyzer:
+    def analyze(self, notification_id: str):
+        process_notification_analysis.delay(notification_id)

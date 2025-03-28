@@ -1,0 +1,11 @@
+# Your backend secrets
+[db]
+user = "test"
+password = "test"
+name = "test"
+host = "127.0.0.1"
+port = 5433
+
+[redis]
+host = "localhost"
+port = 6380

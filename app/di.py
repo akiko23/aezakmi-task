@@ -6,7 +6,8 @@ from dishka import make_async_container, Scope, provide, Provider
 from redis.asyncio import Redis, ConnectionPool as RedisConnectionPool
 from app.config import load_config, Config
 from app.repositories.notification_repository import NotificationRepository
-from app.services.notification_service import NotificationService, NotificationGateway
+from app.services.notification_service import NotificationService, NotificationGateway, NotificationAnalyzer
+from app.tasks.ai_tasks import AINotificationAnalyzer
 
 
 def config_provider() -> Provider:
@@ -44,8 +45,16 @@ class NotificationProvider(Provider):
         return NotificationRepository(session)
 
     @provide(scope=Scope.REQUEST)
-    def get_notification_service(self, repository: NotificationGateway) -> NotificationService:
-        return NotificationService(repository)
+    def get_ai_notification_analyzer(self) -> NotificationAnalyzer:
+        return AINotificationAnalyzer()
+
+    @provide(scope=Scope.REQUEST)
+    def get_notification_service(
+            self,
+            repository: NotificationGateway,
+            notification_analyzer: NotificationAnalyzer,
+    ) -> NotificationService:
+        return NotificationService(repository, notification_analyzer)
 
 
 def setup_di():

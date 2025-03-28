@@ -20,7 +20,7 @@ async def test_health(test_client: AsyncClient):
 async def test_create_notification(test_client: AsyncClient):
     new_obj = NotificationCreate(title="title", text="blah blah", user_id=str(uuid.uuid4()))
 
-    response = await test_client.post('/api/v1/notifications/', data=new_obj.model_dump_json())
+    response = await test_client.post('/api/v1/notifications/', content=new_obj.model_dump_json())
     assert response.status_code == 201
 
 
@@ -28,7 +28,6 @@ async def test_create_notification(test_client: AsyncClient):
 async def test_get_notifications(test_client: AsyncClient, db_session: AsyncSession):
     user_id = uuid.uuid4()
 
-    await db_session.execute(text('truncate notifications'))
     existing_notifications = [
         Notification(
             id=str(uuid.uuid4()),
@@ -66,3 +65,23 @@ async def test_get_notifications(test_client: AsyncClient, db_session: AsyncSess
     assert response.status_code == 200
     assert len(response.json()) == len(existing_notifications)
 
+
+@pytest.mark.asyncio
+async def test_get_notification(test_client: AsyncClient, db_session: AsyncSession):
+    user_id = uuid.uuid4()
+
+    existing_notification = Notification(
+        id=str(uuid.uuid4()),
+        title="n1",
+        text="hello hello!",
+        user_id=user_id,
+        category="info",
+        confidence=0.9,
+            processing_status="completed"
+    )
+    db_session.add(existing_notification)
+    await db_session.commit()
+
+    response = await test_client.get(f'/api/v1/notifications/{existing_notification.id}')
+    assert response.status_code == 200
+    assert response.json()['text'] == existing_notification.text

@@ -12,7 +12,7 @@ from app.di import setup_di
 async def lifespan(app_: FastAPI) -> AsyncGenerator[None, None]:
     yield
 
-    app_.container.close()
+    await app_.container.close()
 
 def create_app(ioc_container: AsyncContainer):
     application = FastAPI(title="Notification Service", version="1.0.0", lifespan=lifespan)

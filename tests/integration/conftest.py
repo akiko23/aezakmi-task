@@ -21,6 +21,11 @@ from app.main import create_app
 from app.models import Base
 from app.di import DatabaseProvider, NotificationProvider, RedisProvider, config_provider
 
+import tracemalloc
+
+tracemalloc.start()
+
+
 BASE_URL = "http://test"
 TEST_CONFIG_PATH = "configs/app_test.toml"
 SETUP_TEST_ENVIRONMENT_SCRIPT_PATH = 'tests/integration/scripts/setup_test_environment.sh'
@@ -42,16 +47,17 @@ def _prepare_test_environment():
 
 
 # make sure that data will be lost after the end of the test
-async def get_session(sessionmaker: async_sessionmaker) -> AsyncGenerator[AsyncSession, None]:
+async def get_one_time_session(sessionmaker: async_sessionmaker) -> AsyncGenerator[AsyncSession, None]:
     async with sessionmaker() as session:
         yield session
         await session.execute(text('truncate notifications;'))
+        await session.commit()
 
 
-@pytest_asyncio.fixture(scope="session", loop_scope="session")
+@pytest_asyncio.fixture(scope="module")
 async def ioc_container(_prepare_test_environment) -> AsyncContainer:
     mock_provider = Provider(scope=Scope.APP)
-    mock_provider.provide(get_session, provides=AsyncSession, scope=Scope.REQUEST)
+    mock_provider.provide(get_one_time_session, provides=AsyncSession, scope=Scope.REQUEST)
     container = make_async_container(
         config_provider(),
         DatabaseProvider(),
@@ -63,19 +69,19 @@ async def ioc_container(_prepare_test_environment) -> AsyncContainer:
     await container.close()
 
 
-@pytest_asyncio.fixture(scope="module", loop_scope="session")
+@pytest_asyncio.fixture(scope="module")
 async def engine(ioc_container: AsyncContainer) -> AsyncEngine:
     eng = await ioc_container.get(AsyncEngine)
     return eng
 
 
-@pytest_asyncio.fixture(scope="module", loop_scope="session")
+@pytest_asyncio.fixture(scope="module")
 async def cfg(ioc_container: AsyncContainer) -> Config:
     cfg = await ioc_container.get(Config)
     return cfg
 
 
-@pytest_asyncio.fixture(scope="module", loop_scope="session")
+@pytest_asyncio.fixture(scope="module")
 async def _make_migrations(engine: AsyncEngine, cfg: Config) -> None:
     async with engine.begin() as conn:
         await conn.execute(text('create schema if not exists test;'))
@@ -87,13 +93,15 @@ async def _make_migrations(engine: AsyncEngine, cfg: Config) -> None:
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest_asyncio.fixture(scope="function", loop_scope="session")
+@pytest_asyncio.fixture(scope="function")
 async def db_session(
         ioc_container: AsyncContainer, _make_migrations,
 ) -> AsyncGenerator[AsyncSession, None]:
     async with ioc_container() as request_container:
         session = await request_container.get(AsyncSession)
         yield session
+        await session.execute(text('truncate notifications;'))
+        await session.commit()
 
 
 @pytest_asyncio.fixture(scope="function")
@@ -105,3 +113,4 @@ async def test_client(ioc_container: AsyncContainer, _make_migrations) -> AsyncC
         headers={"Accept": "application/json"},
     ) as ac:
         yield ac
+        await ac.aclose()

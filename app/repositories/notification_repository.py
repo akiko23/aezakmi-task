@@ -69,11 +69,3 @@ class NotificationRepository:
         await self.session.commit()
         await self.session.refresh(notification)
         return notification
-
-    async def delete(self, notification_id: str) -> bool:
-        notification = await self.get(notification_id)
-        if not notification:
-            return False
-        await self.session.delete(notification)
-        await self.session.commit()
-        return True

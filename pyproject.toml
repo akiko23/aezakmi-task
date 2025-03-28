@@ -11,8 +11,32 @@ dependencies = [
     "celery>=5.4.0",
     "dishka>=1.5.0",
     "fastapi==0.112",
+    "httpx>=0.28.1",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
     "redis>=5.2.1",
     "sqlalchemy>=2.0.39",
     "toml>=0.10.2",
     "uvicorn>=0.34.0",
 ]
+
+
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+pythonpath = [
+    "."
+]
+# Suppress specific warnings
+filterwarnings = [
+    # Suppress PytestDeprecationWarning about asyncio_default_fixture_loop_scope being unset
+    "ignore:The configuration option \"asyncio_default_fixture_loop_scope\" is unset:DeprecationWarning",
+    # Suppress DeprecationWarning about no current event loop
+    "ignore:There is no current event loop:DeprecationWarning",
+    # Suppress DeprecationWarning about redefining the event_loop fixture
+    "ignore:The event_loop fixture provided by pytest-asyncio has been redefined:DeprecationWarning"
+]
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"

@@ -7,7 +7,6 @@ from app.schemas.notification import (
     NotificationResponse,
     NotificationUpdate,
 )
-from app.tasks.ai_tasks import process_notification_analysis
 
 
 class NotificationGateway(Protocol):
@@ -32,19 +31,23 @@ class NotificationGateway(Protocol):
     ) -> Optional[Notification]:
         raise NotImplementedError
 
-    async def delete(self, notification_id: str) -> bool:
+
+
+class NotificationAnalyzer(Protocol):
+    def analyze(self, notification_id: str):
         raise NotImplementedError
 
 
 class NotificationService:
-    def __init__(self, repository: NotificationGateway):
+    def __init__(self, repository: NotificationGateway, notification_analyzer: NotificationAnalyzer):
         self.repository = repository
+        self.notification_analyzer = notification_analyzer
 
     async def create_notification(
         self, notification: NotificationCreate
     ) -> NotificationResponse:
         db_notification = await self.repository.create(notification)
-        process_notification_analysis.delay(str(db_notification.id))
+        self.notification_analyzer.analyze(str(db_notification.id))
         return NotificationResponse.model_validate(db_notification)
 
     async def get_notification(self, notification_id: str) -> Optional[NotificationResponse]:
@@ -59,22 +62,14 @@ class NotificationService:
         notifications = await self.repository.get_all(skip=skip, limit=limit, status=status)
         return [NotificationResponse.model_validate(n) for n in notifications]
 
-    async def update_notification(
-        self, notification_id: str, notification_update: NotificationUpdate
+    async def mark_as_read(
+        self, notification_id: str,
     ) -> Optional[NotificationResponse]:
-        notification_update.read_at = datetime.now()
-        updated_notification = await self.repository.update(notification_id, notification_update)
+        update_data = NotificationUpdate(read_at=datetime.now())
+        updated_notification = await self.repository.update(notification_id, update_data)
         if not updated_notification:
             return None
         return NotificationResponse.model_validate(updated_notification)
-
-    async def mark_as_read(self, notification_id: str) -> Optional[NotificationResponse]:
-        from datetime import datetime
-        update_data = NotificationUpdate(read_at=datetime.now())
-        return await self.update_notification(notification_id, update_data)
-
-    async def delete_notification(self, notification_id: str) -> bool:
-        return await self.repository.delete(notification_id)
 
     async def get_processing_status(self, notification_id: str) -> Optional[str]:
         notification = await self.repository.get(notification_id)

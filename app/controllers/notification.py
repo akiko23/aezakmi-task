@@ -46,13 +46,12 @@ async def get_notification(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
     return notification
 
-@router.patch("/notifications/{notification_id}", response_model=NotificationResponse)
-async def update_notification(
+@router.patch("/notifications/{notification_id}/mark-as-read", response_model=NotificationResponse)
+async def mark_notification_as_read(
     notification_id: str,
-    notification_update: NotificationUpdate,
     service: FromDishka[NotificationService]
 ):
-    notification = await service.update_notification(notification_id, notification_update)
+    notification = await service.mark_as_read(notification_id)
     if not notification:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
     return notification
