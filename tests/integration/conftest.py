@@ -1,27 +1,29 @@
 import asyncio
 import os
+import tracemalloc
 from asyncio import AbstractEventLoop
-
-from dishka import Provider, Scope, make_async_container
 from typing import AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
-from dishka import AsyncContainer
+from dishka import AsyncContainer, Provider, Scope, make_async_container
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
-    async_sessionmaker
+    async_sessionmaker,
 )
-from httpx import AsyncClient, ASGITransport
 
 from aezakmi_task.config import Config
+from aezakmi_task.di import (
+    DatabaseProvider,
+    NotificationProvider,
+    RedisProvider,
+    config_provider,
+)
 from aezakmi_task.main import create_app
 from aezakmi_task.models import Base
-from aezakmi_task.di import DatabaseProvider, NotificationProvider, RedisProvider, config_provider
-
-import tracemalloc
 
 tracemalloc.start()
 

@@ -1,10 +1,11 @@
+import hashlib
+import json
+from functools import wraps
 from typing import Any
 
-from redis.asyncio import Redis
 from pydantic import BaseModel
-from functools import wraps
-import json
-import hashlib
+from redis.asyncio import Redis
+
 
 def cache(ttl: int = 60):
     def decorator(func):

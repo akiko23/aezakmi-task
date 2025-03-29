@@ -1,6 +1,8 @@
-from pydantic import BaseModel, UUID4, ConfigDict
 from datetime import datetime
 from typing import Optional
+
+from pydantic import UUID4, BaseModel, ConfigDict
+
 
 class NotificationBase(BaseModel):
     title: str

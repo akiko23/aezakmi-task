@@ -1,13 +1,12 @@
 import time
 from contextlib import suppress
 
-from fastapi import HTTPException
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import JSONResponse
-from starlette.requests import Request
 from dishka import AsyncContainer
+from fastapi import HTTPException
 from redis.asyncio import Redis
-
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 # Настройки rate limiting
 RATE_LIMIT = 50  # Максимум 50 запросов

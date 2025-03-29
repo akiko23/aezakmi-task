@@ -12,7 +12,7 @@ dependencies = [
     "dishka>=1.5.0",
     "fastapi==0.112",
     "httpx>=0.28.1",
-    "prometheus-fastapi-instrumentator>=7.1.0",
+    "isort>=6.0.1",
     "pytest>=8.3.5",
     "pytest-asyncio>=0.26.0",
     "redis>=5.2.1",
@@ -68,6 +68,13 @@ docstring-code-line-length = "dynamic"
 
 [tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
+
+
+# Isort configuration
+[tool.isort]
+include_trailing_comma = true
+use_parentheses = true
+multi_line_output = 3
 
 
 [tool.pytest.ini_options]

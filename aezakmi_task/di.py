@@ -1,13 +1,23 @@
 import os
 from collections.abc import AsyncGenerator
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker, AsyncEngine
-from dishka import make_async_container, Scope, provide, Provider
+from dishka import Provider, Scope, make_async_container, provide
 from redis.asyncio import Redis
-from aezakmi_task.config import load_config, Config
-from aezakmi_task.repositories.notification_repository import NotificationRepository
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+
+from aezakmi_task.config import Config, load_config
+from aezakmi_task.repositories.notification_repository import (
+    NotificationRepository,
+)
 from aezakmi_task.services.notification_service import (
-    NotificationService, NotificationGateway, NotificationAnalyzer
+    NotificationAnalyzer,
+    NotificationGateway,
+    NotificationService,
 )
 from aezakmi_task.tasks.ai_tasks import AINotificationAnalyzer
 

@@ -6,14 +6,14 @@ from redis.asyncio import Redis
 
 from aezakmi_task.schemas.notification import (
     NotificationCreate,
-    NotificationResponse
+    NotificationResponse,
 )
 from aezakmi_task.services.notification_service import NotificationService
 from aezakmi_task.utils.cache import cache
 from aezakmi_task.utils.metrics import (
-    measure_latency,
     CREATE_NOTIFICATION_METHOD_DURATION,
-    GET_ALL_NOTIFICATIONS_METHOD_DURATION
+    GET_ALL_NOTIFICATIONS_METHOD_DURATION,
+    measure_latency,
 )
 
 router = APIRouter(route_class=DishkaRoute)

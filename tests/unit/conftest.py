@@ -4,9 +4,9 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 
 from aezakmi_task.services.notification_service import (
-    NotificationService,
+    NotificationAnalyzer,
     NotificationGateway,
-    NotificationAnalyzer
+    NotificationService,
 )
 
 

@@ -1,8 +1,14 @@
+from typing import List, Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
 from aezakmi_task.models.notification import Notification
-from aezakmi_task.schemas.notification import NotificationCreate, NotificationUpdate
-from typing import List, Optional
+from aezakmi_task.schemas.notification import (
+    NotificationCreate,
+    NotificationUpdate,
+)
+
 
 class NotificationRepository:
     def __init__(self, session: AsyncSession):

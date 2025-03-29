@@ -2,18 +2,23 @@ import asyncio
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from fastapi import FastAPI
 from dishka import AsyncContainer
+from dishka.integrations.fastapi import setup_dishka
+from fastapi import FastAPI
 from redis.asyncio import Redis
 
-from aezakmi_task.controllers.middlewares.rate_limiting_middleware import RateLimitMiddleware
-from aezakmi_task.controllers.notification import router as notifications_router
 from aezakmi_task.controllers.metrics import router as metrics_router
-from dishka.integrations.fastapi import setup_dishka
-from aezakmi_task.controllers.middlewares.metrics_middleware import RequestCountMiddleware
-
-
+from aezakmi_task.controllers.middlewares.metrics_middleware import (
+    RequestCountMiddleware,
+)
+from aezakmi_task.controllers.middlewares.rate_limiting_middleware import (
+    RateLimitMiddleware,
+)
+from aezakmi_task.controllers.notification import (
+    router as notifications_router,
+)
 from aezakmi_task.di import setup_di
+
 
 @asynccontextmanager
 async def lifespan(app_: FastAPI) -> AsyncGenerator[None, None]:
