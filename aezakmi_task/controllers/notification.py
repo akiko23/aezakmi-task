@@ -10,11 +10,17 @@ from aezakmi_task.schemas.notification import (
 )
 from aezakmi_task.services.notification_service import NotificationService
 from aezakmi_task.utils.cache import cache
+from aezakmi_task.utils.metrics import (
+    measure_latency,
+    CREATE_NOTIFICATION_METHOD_DURATION,
+    GET_ALL_NOTIFICATIONS_METHOD_DURATION
+)
 
 router = APIRouter(route_class=DishkaRoute)
 
 
 @router.post("/notifications/", response_model=NotificationResponse)
+@measure_latency(CREATE_NOTIFICATION_METHOD_DURATION)
 async def create_notification(
         notification: NotificationCreate,
         service: FromDishka[NotificationService]
@@ -27,6 +33,7 @@ async def create_notification(
 
 
 @router.get("/notifications/")
+@measure_latency(GET_ALL_NOTIFICATIONS_METHOD_DURATION)
 @cache(ttl=10)
 async def get_notifications(
         service: FromDishka[NotificationService],

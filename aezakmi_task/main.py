@@ -3,9 +3,13 @@ from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from dishka import AsyncContainer
+from starlette.middleware.base import BaseHTTPMiddleware
+
 from aezakmi_task.controllers.notification import router as notifications_router
+from aezakmi_task.controllers.metrics import router as metrics_router
 from dishka.integrations.fastapi import setup_dishka
-from prometheus_fastapi_instrumentator import Instrumentator
+from aezakmi_task.controllers.middlewares.metrics_middleware import RequestCountMiddleware
+
 
 from aezakmi_task.di import setup_di
 
@@ -21,7 +25,9 @@ def create_app(ioc_container: AsyncContainer):
     setup_dishka(container=ioc_container, app=application)
 
     application.container = ioc_container
+    application.add_middleware(RequestCountMiddleware)
     application.include_router(notifications_router, prefix="/api/v1")
+    application.include_router(metrics_router)
 
     @application.get("/health")
     async def health_check():
@@ -33,5 +39,3 @@ def create_app(ioc_container: AsyncContainer):
 container = setup_di()
 app = create_app(container)
 
-# initialise metrics
-Instrumentator().instrument(app).expose(app)

@@ -3,7 +3,7 @@ import asyncio
 
 
 async def analyze_text(text: str) -> dict:
-    await asyncio.sleep(random.uniform(2, 10))
+    await asyncio.sleep(random.uniform(1, 3))
     text_lower = text.lower()
 
     if any(word in text_lower for word in ["error", "exception", "failed"]):

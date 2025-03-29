@@ -24,7 +24,6 @@ scrape_configs:
   metrics_path: /metrics
   scheme: http
   follow_redirects: true
-  enable_http2: true
   static_configs:
   - targets:
     - localhost:9090

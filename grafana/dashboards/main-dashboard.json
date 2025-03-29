@@ -24,7 +24,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "feh8p15585zpcc"
+        "uid": "aehad4bgcckqoe"
       },
       "fieldConfig": {
         "defaults": {
@@ -105,11 +105,11 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "feh8p15585zpcc"
+            "uid": "aehad4bgcckqoe"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "http_requests_total{handler=\"/metrics\"}",
+          "expr": "messages_produced_to_ai_service_total{instance=\"notification_service:8000\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
@@ -120,11 +120,11 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "feh8p15585zpcc"
+            "uid": "aehad4bgcckqoe"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "http_request_duration_seconds_count",
+          "expr": "sum(increase(http_requests_total{instance=\"notification_service:8000\"}[5m]))",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": true,
@@ -135,7 +135,7 @@
           "useBackend": false
         }
       ],
-      "title": "api_request_duration_seconds_count",
+      "title": "Panel Title",
       "type": "timeseries"
     }
   ],
@@ -146,12 +146,12 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
-    "to": "now"
+    "from": "2025-03-29T08:44:35.325Z",
+    "to": "2025-03-29T09:22:30.972Z"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Notification Service Dashboard",
-  "uid": "ceh8qhx4l9szkc",
+  "uid": "dehae1vktwl4wd",
   "version": 1
 }

@@ -10,7 +10,7 @@ from dishka import make_async_container, Scope, provide, Provider
 from aezakmi_task.config import load_config
 from aezakmi_task.repositories.notification_repository import NotificationRepository
 from aezakmi_task.services.ai_service import analyze_text
-
+from aezakmi_task.utils.metrics import TOTAL_MESSAGES_PRODUCED
 
 cfg = load_config(os.getenv('AEZAKMI_TEST_CONFIG_PATH', './configs/app.toml'))
 celery_app = Celery('tasks', broker=cfg.redis.uri)
@@ -39,6 +39,7 @@ container = make_async_container(DatabaseProvider())
 def run_async(coro):
     loop = asyncio.get_event_loop()
     return loop.run_until_complete(coro)
+
 
 
 @celery_app.task
@@ -72,3 +73,4 @@ def process_notification_analysis(notification_id: str):
 class AINotificationAnalyzer:
     def analyze(self, notification_id: str):
         process_notification_analysis.delay(notification_id)
+        TOTAL_MESSAGES_PRODUCED.inc()
