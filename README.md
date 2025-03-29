@@ -37,7 +37,7 @@ cd aezakmi-task
 
 1.1 (Optional) Запустите теты
 ```bash
-uv run pytest
+AEZAKMI_TEST_CONFIG_PATH=configs/app_test.toml uv run pytest
 ```
 
 2. Запустите проект с помощью docker compose
