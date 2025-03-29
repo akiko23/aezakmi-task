@@ -40,7 +40,7 @@ git clone https://github.com/akiko23/aezakmi-task
 cd aezakmi-task
 ```
 
-1.1 (Optional) Запустите теты
+1.1 (Optional) Запустите тесты
 ```bash
 AEZAKMI_TEST_CONFIG_PATH=configs/app_test.toml uv run pytest
 ```
