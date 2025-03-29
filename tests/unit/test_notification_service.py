@@ -149,12 +149,24 @@ async def test_mark_notification_as_read(
         created_at=datetime.now(),
         processing_status="pending",
         category="info",
+        read_at=None  # noqa
     )
-    existing_notification.read_at = datetime.now()
-    notification_repository_mock.update.return_value = existing_notification
+
+    notification_repository_mock.get.return_value = existing_notification
+
+    updated_notification = Notification(
+        id=uuid.uuid4(),
+        title="title",
+        text="text",
+        user_id=uuid.uuid4(),
+        created_at=datetime.now(),
+        processing_status="pending",
+        category="info",
+        read_at=datetime.now()
+    )
+    notification_repository_mock.update.return_value = updated_notification
 
     updated_notification = await notification_service.mark_as_read(existing_notification.id)
     notification_repository_mock.update.assert_called_once()
 
     assert updated_notification.read_at is not None
-

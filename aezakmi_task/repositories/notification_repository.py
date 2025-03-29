@@ -48,11 +48,8 @@ class NotificationRepository:
         return notifications, total
 
     async def update(
-        self, notification_id: str, notification_update: NotificationUpdate
-    ) -> Optional[Notification]:
-        notification = await self.get(notification_id)
-        if not notification:
-            return None
+        self, notification: Notification, notification_update: NotificationUpdate
+    ) -> Notification:
         notification.read_at = notification_update.read_at
         await self.session.commit()
         await self.session.refresh(notification)

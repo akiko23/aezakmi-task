@@ -9,7 +9,7 @@ from redis.asyncio import Redis
 from starlette.websockets import WebSocket
 
 from aezakmi_task.schemas.notification import NotificationCreate, NotificationResponse
-from aezakmi_task.services.notification_service import NotificationService
+from aezakmi_task.services.notification_service import NotificationService, CanNotMarkAsReadException
 from aezakmi_task.utils.cache import cache
 from aezakmi_task.utils.metrics import (
     CREATE_NOTIFICATION_METHOD_DURATION,
@@ -75,7 +75,11 @@ async def mark_notification_as_read(
         notification_id: str,
         service: FromDishka[NotificationService]
 ):
-    notification = await service.mark_as_read(notification_id)
+    try:
+        notification = await service.mark_as_read(notification_id)
+    except CanNotMarkAsReadException as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
     if not notification:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
     return notification
