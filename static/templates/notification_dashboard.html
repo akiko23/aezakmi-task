@@ -93,7 +93,7 @@
                 const notificationsDiv = document.getElementById('notifications');
                 notificationsDiv.innerHTML = '';
                 total = data.total;
-                data.results.forEach(addNotification);
+                data.results.reverse().forEach(addNotification);
                 updatePagination();
             })
             .catch(error => console.error('Ошибка загрузки уведомлений:', error));
