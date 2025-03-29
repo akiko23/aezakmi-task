@@ -45,7 +45,7 @@ AEZAKMI_TEST_CONFIG_PATH=configs/app_test.toml uv run pytest
 docker compose up -d
 ```
 
-3. После запуска можно зайти в Swagger, либо Grafana
+3. После запуска можно зайти в Swagger (http://localhost:8000/docs), либо Grafana (http://localhost:3000). Логин - admin; пароль - admin
    
 ![image](https://github.com/user-attachments/assets/25db73cc-b242-4201-8a81-73cf967bc508)
 
