@@ -5,7 +5,7 @@ from aezakmi_task.models import Notification
 from aezakmi_task.schemas.notification import (
     NotificationCreate,
     NotificationResponse,
-    NotificationUpdate,
+    NotificationUpdate, ManyNotificationsResponse,
 )
 
 
@@ -17,8 +17,8 @@ class NotificationGateway(Protocol):
         raise NotImplementedError
 
     async def get_all(
-        self, skip: int = 0, limit: int = 10, status: str = None
-    ) -> List[Notification]:
+        self, skip: int = 0, limit: int = 10, status: Optional[str] = None, user_id: Optional[str] = None
+    ) -> tuple[List[Notification], int]:
         raise NotImplementedError
 
     async def update(
@@ -57,10 +57,17 @@ class NotificationService:
         return NotificationResponse.model_validate(notification)
 
     async def get_notifications(
-        self, skip: int = 0, limit: int = 10, status: str = None
-    ) -> List[NotificationResponse]:
-        notifications = await self.repository.get_all(skip=skip, limit=limit, status=status)
-        return [NotificationResponse.model_validate(n) for n in notifications]
+        self,
+        skip: int = 0,
+        limit: int = 10,
+        user_id: Optional[str] = None,
+        status: Optional[str] = None,
+    ) -> ManyNotificationsResponse:
+        notifications, total = await self.repository.get_all(skip=skip, limit=limit, user_id=user_id, status=status)
+        return ManyNotificationsResponse(
+            total=total,
+            results=[NotificationResponse.model_validate(n) for n in notifications],
+        )
 
     async def mark_as_read(
         self, notification_id: str,

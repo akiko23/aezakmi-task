@@ -1,13 +1,10 @@
-from typing import List, Optional
+from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+from sqlalchemy import select, func
 
 from aezakmi_task.models.notification import Notification
-from aezakmi_task.schemas.notification import (
-    NotificationCreate,
-    NotificationUpdate,
-)
+from aezakmi_task.schemas.notification import NotificationCreate, NotificationUpdate
 
 
 class NotificationRepository:
@@ -28,14 +25,27 @@ class NotificationRepository:
         return result.scalars().first()
 
     async def get_all(
-        self, skip: int = 0, limit: int = 10, status: str = None
-    ) -> List[Notification]:
-        query = select(Notification)
+            self,
+            skip: int = 0,
+            limit: int = 10,
+            status: Optional[str] = None,
+            user_id: Optional[str] = None
+    ) -> tuple[list[Notification], int]:
+        base_query = select(Notification)
         if status:
-            query = query.filter(Notification.processing_status == status)
-        query = query.offset(skip).limit(limit)
-        result = await self.session.execute(query)
-        return list(result.scalars().all())
+            base_query = base_query.filter(Notification.processing_status == status)
+        if user_id:
+            base_query = base_query.filter(Notification.user_id == user_id)
+
+        data_query = base_query.order_by(Notification.created_at.desc()).offset(skip).limit(limit)
+        data_result = await self.session.execute(data_query)
+        notifications = list(data_result.scalars().all())
+
+        count_query = select(func.count()).select_from(base_query.subquery())
+        count_result = await self.session.execute(count_query)
+        total = count_result.scalar()
+
+        return notifications, total
 
     async def update(
         self, notification_id: str, notification_update: NotificationUpdate

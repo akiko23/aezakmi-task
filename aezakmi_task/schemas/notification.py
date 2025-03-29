@@ -25,3 +25,7 @@ class NotificationResponse(NotificationBase):
     confidence: Optional[float]
     processing_status: str
 
+
+class ManyNotificationsResponse(BaseModel):
+    total: int
+    results: list[NotificationResponse]

@@ -5,7 +5,10 @@ from typing import Any, Callable
 from prometheus_client import Counter, Histogram
 
 REQUESTS_TOTAL = Counter('http_requests_total', 'Total HTTP Requests')
-TOTAL_MESSAGES_PRODUCED = Counter('messages_produced_to_ai_service_total', 'Total messages produced to AI service')
+TOTAL_MESSAGES_PRODUCED = Counter(
+    'messages_produced_to_ai_service_total',
+    'Total messages produced to AI service'
+)
 
 CREATE_NOTIFICATION_METHOD_DURATION = Histogram(
     'create_notification_duration_seconds',

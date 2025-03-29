@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Панель уведомлений</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .notification {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .info { background-color: #e3f2fd; }
+        .warning { background-color: #fff3e0; }
+        .critical { background-color: #ffebee; }
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .pagination button {
+            padding: 5px 10px;
+            margin: 0 5px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        #logoutBtn {
+            padding: 5px 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Ваши уведомления</h2>
+            <button id="logoutBtn">Выход</button>
+        </div>
+        <div id="notifications"></div>
+        <div class="pagination">
+            <button id="prevPage" disabled>Предыдущая</button>
+            <span id="pageInfo"></span>
+            <button id="nextPage">Следующая</button>
+        </div>
+    </div>
+
+    <script>
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            window.location.href = '/';
+        }
+
+        const limit = 10;
+        let skip = 0;
+        let total = 0;
+
+        const ws = new WebSocket(`ws://localhost:8000/api/v1/ws?user_id=${userId}`);
+
+        ws.onopen = () => console.log('WebSocket соединение установлено');
+        ws.onerror = (error) => console.error('WebSocket ошибка:', error);
+        ws.onclose = () => console.log('WebSocket соединение закрыто');
+
+        ws.onmessage = (event) => {
+            try {
+                console.log('Полученные данные:', event.data);
+                const notification = JSON.parse(event.data);
+                console.log('Распарсенный объект:', notification);
+                addNotification(notification);
+            } catch (error) {
+                console.error('Ошибка при парсинге уведомления:', error);
+            }
+        };
+
+        function loadNotifications() {
+            fetch(`/api/v1/notifications?user_id=${userId}&skip=${skip}&limit=${limit}`, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const notificationsDiv = document.getElementById('notifications');
+                notificationsDiv.innerHTML = '';
+                total = data.total;
+                data.results.forEach(addNotification);
+                updatePagination();
+            })
+            .catch(error => console.error('Ошибка загрузки уведомлений:', error));
+        }
+
+        function addNotification(notification) {
+            const notificationsDiv = document.getElementById('notifications');
+            const div = document.createElement('div');
+            div.className = `notification ${notification.category || 'info'}`;
+            div.dataset.id = notification.id;
+
+            const createdAt = new Date(notification.created_at).toLocaleString();
+            const readAt = notification.read_at
+                ? new Date(notification.read_at).toLocaleString()
+                : 'Непрочитано';
+
+            div.innerHTML = `
+                <h3>${notification.title || 'Без заголовка'}</h3>
+                <p>${notification.text || 'Нет текста'}</p>
+                <small>Создано: ${createdAt}</small>
+                <br><small id="read-${notification.id}">Прочитано: ${readAt}</small>
+            `;
+
+            notificationsDiv.prepend(div);
+
+            if (!notification.read_at) {
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            markAsRead(notification.id, div);
+                            observer.unobserve(div);
+                        }
+                    });
+                }, { threshold: 1.0 });
+                observer.observe(div);
+            }
+        }
+
+        function markAsRead(notificationId, div) {
+            fetch(`/api/v1/notifications/${notificationId}/mark-as-read`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    const readElement = div.querySelector(`#read-${notificationId}`);
+                    readElement.textContent = `Прочитано: ${new Date().toLocaleString()}`;
+                }
+            })
+            .catch(error => console.error('Ошибка при отметке как прочитанного:', error));
+        }
+
+
+        function updatePagination() {
+            const pageInfo = document.getElementById('pageInfo');
+            const prevButton = document.getElementById('prevPage');
+            const nextButton = document.getElementById('nextPage');
+            const currentPage = Math.floor(skip / limit) + 1;
+            const totalPages = Math.ceil(total / limit);
+
+            pageInfo.textContent = `Страница ${currentPage} из ${totalPages}`;
+            prevButton.disabled = skip === 0;
+            nextButton.disabled = skip + limit >= total;
+        }
+
+        document.getElementById('prevPage').addEventListener('click', () => {
+            if (skip > 0) {
+                skip -= limit;
+                loadNotifications();
+            }
+        });
+
+        document.getElementById('nextPage').addEventListener('click', () => {
+            if (skip + limit < total) {
+                skip += limit;
+                loadNotifications();
+            }
+        });
+
+        // Logout logic
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('userId');
+            ws.close();
+            window.location.href = '/';
+        });
+
+        loadNotifications();
+    </script>
+</body>
+</html>

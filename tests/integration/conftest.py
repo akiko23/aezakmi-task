@@ -9,19 +9,10 @@ import pytest_asyncio
 from dishka import AsyncContainer, Provider, Scope, make_async_container
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
-    async_sessionmaker,
-)
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from aezakmi_task.config import Config
-from aezakmi_task.di import (
-    DatabaseProvider,
-    NotificationProvider,
-    RedisProvider,
-    config_provider,
-)
+from aezakmi_task.di import DatabaseProvider, NotificationProvider, RedisProvider, config_provider
 from aezakmi_task.main import create_app
 from aezakmi_task.models import Base
 

@@ -4,17 +4,10 @@ from collections.abc import AsyncGenerator
 
 from celery import Celery
 from dishka import Provider, Scope, make_async_container, provide
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 
 from aezakmi_task.config import load_config
-from aezakmi_task.repositories.notification_repository import (
-    NotificationRepository,
-)
+from aezakmi_task.repositories.notification_repository import NotificationRepository
 from aezakmi_task.services.ai_service import analyze_text
 from aezakmi_task.utils.metrics import TOTAL_MESSAGES_PRODUCED
 

@@ -62,7 +62,7 @@ async def test_get_notifications(test_client: AsyncClient, db_session: AsyncSess
 
     response = await test_client.get('/api/v1/notifications/')
     assert response.status_code == 200
-    assert len(response.json()) == len(existing_notifications)
+    assert len(response.json()['results']) == len(existing_notifications)
 
 
 @pytest.mark.asyncio

@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 
 from aezakmi_task.models import Notification
-from aezakmi_task.schemas.notification import NotificationCreate
+from aezakmi_task.schemas.notification import NotificationCreate, ManyNotificationsResponse
 from aezakmi_task.services.notification_service import NotificationService
 
 
@@ -70,13 +70,14 @@ async def test_get_all_notifications(
         created_at=datetime.now(),
         processing_status="pending"
     ) for i in range(10)]
-    notification_repository_mock.get.return_value = existing_notifications
+    notification_repository_mock.get_all.return_value = (existing_notifications, len(existing_notifications))
 
     await notification_service.get_notifications(limit=limit, skip=offset)
     notification_repository_mock.get_all.assert_called_once_with(
         skip=offset,
         limit=limit,
-        status=None
+        status=None,
+        user_id=None,
     )
 
 
@@ -103,13 +104,14 @@ async def test_get_only_completed_notifications(
         created_at=datetime.now(),
         processing_status="completed"
     ) for i in range(5)]
-    notification_repository_mock.get.return_value = completed_notifications
+    notification_repository_mock.get_all.return_value = (completed_notifications, len(completed_notifications))
 
     await notification_service.get_notifications(limit=limit, skip=offset, status="completed")
     notification_repository_mock.get_all.assert_called_once_with(
         skip=offset,
         limit=limit,
-        status="completed"
+        status="completed",
+        user_id=None,
     )
 
 
